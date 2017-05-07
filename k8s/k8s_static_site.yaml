@@ -1,10 +1,17 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: dev-nginx-demo-arm
+  labels:
+    name: dev-nginx-demo-arm
+---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: prod-cs-web
+  name: nginx-demo-arm
   labels:
-    app: prod-cs-web
-  namespace: prod-cs-web-temp
+    app: nginx-demo-arm
+  namespace: dev-nginx-demo-arm
 spec:
   strategy:
     type: Recreate
@@ -12,28 +19,30 @@ spec:
   template:
     metadata:
       labels:
-        app: prod-cs-web
+        app: nginx-demo-arm
         tier: frontend
     spec:
       containers:
-      - image: remonlam/nginx-demo:latest
-        name: prod-cs-web
+      - image: containerstack/nginx-demo-arm:latest
+        name: nginx-demo-arm
         env:
         ports:
         - containerPort: 80
-          name: prod-cs-web
+          name: nginx-demo-arm
+      nodeSelector:
+        instancetype: I1
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: prod-cs-web
+  name: nginx-demo-arm
   labels:
-    app: prod-cs-web
-  namespace: prod-cs-web-temp
+    app: nginx-demo-arm
+  namespace: dev-nginx-demo-arm
 spec:
   ports:
     - port: 80
   selector:
-    app: prod-cs-web
+    app: nginx-demo-arm
     tier: frontend
   type: NodePort
